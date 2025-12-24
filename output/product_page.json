@@ -1,0 +1,48 @@
+{
+  "page_type": "product_page",
+  "product_name": "GlowBoost Vitamin C Serum",
+  "tagline": "Brightening power with Vitamin C",
+  "description": "GlowBoost Vitamin C Serum is a 10% Vitamin C serum designed for Oily and Combination skin. Formulated with Vitamin C, Hyaluronic Acid, it delivers brightening and fades dark spots benefits. Apply 2–3 drops in the morning before sunscreen.",
+  "key_features": [
+    "10% Vitamin C",
+    "Suitable for Oily & Combination skin",
+    "Contains Vitamin C, Hyaluronic Acid",
+    "2 key benefits"
+  ],
+  "ingredients": {
+    "Vitamin C": "A powerful antioxidant that brightens skin tone and reduces signs of aging",
+    "Hyaluronic Acid": "A moisture-binding ingredient that hydrates and plumps the skin"
+  },
+  "usage_guide": {
+    "timing": "morning",
+    "application_amount": "2-3 drops",
+    "full_instructions": "Apply 2–3 drops in the morning before sunscreen",
+    "application_order": "before sunscreen",
+    "frequency": "daily"
+  },
+  "suitable_for": [
+    "Oily",
+    "Combination"
+  ],
+  "benefits": [
+    "Brightening",
+    "Fades dark spots"
+  ],
+  "safety_information": {
+    "side_effects": "Mild tingling for sensitive skin",
+    "precautions": [
+      "Perform patch test before first use",
+      "Avoid contact with eyes",
+      "Discontinue use if irritation occurs"
+    ],
+    "suitable_for_sensitive_skin": "caution",
+    "warnings": "May cause mild tingling"
+  },
+  "pricing": {
+    "price": "₹699",
+    "price_value": "699",
+    "currency": "INR",
+    "value_rating": "affordable"
+  },
+  "generated_by": "Multi-Agent System"
+}

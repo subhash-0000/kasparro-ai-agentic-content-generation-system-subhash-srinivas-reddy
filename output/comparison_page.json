@@ -1,0 +1,101 @@
+{
+  "page_type": "comparison",
+  "product_a": {
+    "name": "GlowBoost Vitamin C Serum",
+    "concentration": "10% Vitamin C",
+    "skin_types": [
+      "Oily",
+      "Combination"
+    ],
+    "key_ingredients": [
+      "Vitamin C",
+      "Hyaluronic Acid"
+    ],
+    "benefits": [
+      "Brightening",
+      "Fades dark spots"
+    ],
+    "price": "₹699"
+  },
+  "product_b": {
+    "name": "RadiantGlow C+ Serum",
+    "concentration": "15% Vitamin C",
+    "skin_types": [
+      "Normal",
+      "Dry"
+    ],
+    "key_ingredients": [
+      "Vitamin C",
+      "Vitamin E",
+      "Ferulic Acid"
+    ],
+    "benefits": [
+      "Anti-aging",
+      "Brightening",
+      "Firming"
+    ],
+    "price": "₹899"
+  },
+  "comparison_points": [
+    {
+      "attribute": "Price",
+      "product_a": "₹699",
+      "product_b": "₹899",
+      "winner": "GlowBoost Vitamin C Serum"
+    },
+    {
+      "attribute": "Vitamin C Concentration",
+      "product_a": "10% Vitamin C",
+      "product_b": "15% Vitamin C",
+      "winner": "RadiantGlow C+ Serum"
+    },
+    {
+      "attribute": "Number of Key Ingredients",
+      "product_a": 2,
+      "product_b": 3,
+      "winner": "RadiantGlow C+ Serum"
+    },
+    {
+      "attribute": "Suitable Skin Types",
+      "product_a": "Oily, Combination",
+      "product_b": "Normal, Dry",
+      "winner": "Tie"
+    },
+    {
+      "attribute": "Number of Benefits",
+      "product_a": 2,
+      "product_b": 3,
+      "winner": "RadiantGlow C+ Serum"
+    },
+    {
+      "attribute": "Ingredient Overlap",
+      "product_a": "Vitamin C, Hyaluronic Acid",
+      "product_b": "Vitamin C, Vitamin E, Ferulic Acid",
+      "winner": "Common: Vitamin C"
+    },
+    {
+      "attribute": "Recommended Application Time",
+      "product_a": "Morning",
+      "product_b": "Evening",
+      "winner": "Flexible"
+    }
+  ],
+  "summary": {
+    "total_comparisons": 7,
+    "GlowBoost Vitamin C Serum_wins": 1,
+    "RadiantGlow C+ Serum_wins": 3,
+    "ties": 3,
+    "strengths_a": [
+      "More affordable",
+      "Suitable for Oily and Combination skin",
+      "Contains Hyaluronic Acid for hydration"
+    ],
+    "strengths_b": [
+      "Higher Vitamin C concentration",
+      "Contains additional antioxidants (Vitamin E, Ferulic Acid)",
+      "More comprehensive anti-aging benefits"
+    ]
+  },
+  "recommendation": "Choose RadiantGlow C+ Serum if you want higher vitamin C concentration and comprehensive anti-aging benefits with additional antioxidant protection.",
+  "generated_by": "Multi-Agent System"
+}
