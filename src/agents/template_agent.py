@@ -38,7 +38,7 @@ class TemplateAgent(BaseAgent):
         Returns:
             FAQPage instance
         """
-        # Select top questions for FAQ (at least 5, well-distributed across categories)
+        # Select top questions for FAQ (20 questions to strongly exceed minimum requirement)
         selected_questions = []
         questions_per_category = {}
         
@@ -48,10 +48,17 @@ class TemplateAgent(BaseAgent):
                 questions_per_category[q.category] = []
             questions_per_category[q.category].append(q)
         
-        # Select questions ensuring category diversity
-        for category in ["Informational", "Usage", "Safety", "Skin Type", "Purchase"]:
+        # Select questions from each category to reach 20 questions
+        # With 8 categories and 23 total questions, we can take 2-3 per category
+        for category in question_set.categories:
             if category in questions_per_category:
-                selected_questions.append(questions_per_category[category][0])
+                # Take up to 3 questions per category to reach 20
+                questions_to_add = min(3, len(questions_per_category[category]))
+                for i in range(questions_to_add):
+                    if len(selected_questions) < 20:
+                        selected_questions.append(questions_per_category[category][i])
+            if len(selected_questions) >= 20:
+                break
         
         # Generate FAQ items with answers
         faq_items = []

@@ -35,7 +35,7 @@ class TemplateEngine:
                 TemplateField(name="faqs", field_type="list", required=True, source_block="faq_items"),
             ],
             rules=[
-                TemplateRule(rule_type="validate", field="faqs", logic="minimum 5 items", parameters={"min_count": 5}),
+                TemplateRule(rule_type="validate", field="faqs", logic="minimum 20 items", parameters={"min_count": 20}),
                 TemplateRule(rule_type="format", field="categories", logic="unique and sorted", parameters={}),
             ],
             required_blocks=["question_generator", "answer_generator"],
