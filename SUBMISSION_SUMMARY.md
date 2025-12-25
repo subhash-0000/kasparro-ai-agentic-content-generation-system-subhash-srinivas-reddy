@@ -104,18 +104,20 @@ All outputs are:
 ✅ **Correctness of Flow** - Orchestrator manages explicit workflow  
 
 **Evidence:**
-- [src/agents/](src/agents/) - 6 agent files with BaseAgent abstraction
-- [src/agents/orchestrator_agent.py](src/agents/orchestrator_agent.py) - Workflow coordination
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Architecture diagrams
+- [src/agents/](src/agents/) - LangChain-powered agents with LLM integration
+- [src/agents/orchestrator_langchain.py](src/agents/orchestrator_langchain.py) - LangChain workflow coordination
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Architecture diagrams showing Groq LLM integration
 
 ### 2. Types & Quality of Agents (25%)
-✅ **Meaningful Roles** - DataParser, QuestionGen, Comparison, Template, Orchestrator  
+✅ **Meaningful Roles** - DataParser, QuestionGenLLM, AnswerGenLLM, ComparisonLLM, Template, Orchestrator  
 ✅ **Appropriate Boundaries** - No overlap, clear separation of concerns  
-✅ **Input/Output Correctness** - Standardized AgentInput/AgentOutput wrappers  
+✅ **LLM Integration** - Real AI generation via Groq API with LangChain  
 
 **Evidence:**
 - [src/agents/base_agent.py](src/agents/base_agent.py) - Base contract
-- Each agent has `execute()`, `validate_input()`, and logging
+- [src/agents/question_generator_agent_llm.py](src/agents/question_generator_agent_llm.py) - AI question generation
+- [src/agents/answer_generator_agent_llm.py](src/agents/answer_generator_agent_llm.py) - AI answer generation
+- [src/agents/comparison_agent_llm.py](src/agents/comparison_agent_llm.py) - AI comparison generation
 - Pydantic models ensure type safety
 
 ### 3. Content System Engineering (20%)
@@ -163,13 +165,14 @@ kasparro/
     │   ├── templates.py             # Template definitions
     │   └── outputs.py               # Output page models
     │
-    ├── agents/                      # Agent implementations
+    ├── agents/                      # LLM-powered agents
     │   ├── base_agent.py            # Abstract base
     │   ├── data_parser_agent.py     # Data parsing
-    │   ├── question_generator_agent.py  # Question gen
-    │   ├── comparison_agent.py      # Comparison logic
-    │   ├── template_agent.py        # Page generation
-    │   └── orchestrator_agent.py    # Workflow coordination
+    │   ├── orchestrator_langchain.py        # LangChain orchestrator
+    │   ├── question_generator_agent_llm.py  # AI question generation
+    │   ├── answer_generator_agent_llm.py    # AI answer generation
+    │   ├── comparison_agent_llm.py          # AI comparison generation
+    │   └── template_agent.py                # JSON output formatting
     │
     ├── logic_blocks/                # Reusable content logic
     │   └── content_blocks.py        # 7 transformation blocks

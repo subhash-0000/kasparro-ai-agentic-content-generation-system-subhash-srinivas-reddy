@@ -135,24 +135,30 @@ class TemplateAgent(BaseAgent):
         product_a = comparison_data["product_a"]
         product_b = comparison_data["product_b"]
         
-        # Create product summaries for comparison
-        product_a_dict = {
-            "name": product_a.name,
-            "concentration": product_a.concentration,
-            "skin_types": product_a.skin_types,
-            "key_ingredients": product_a.key_ingredients,
-            "benefits": product_a.benefits,
-            "price": product_a.price
-        }
+        # Handle both Product objects and dicts
+        if isinstance(product_a, dict):
+            product_a_dict = product_a
+        else:
+            product_a_dict = {
+                "name": product_a.name,
+                "concentration": product_a.concentration,
+                "skin_types": product_a.skin_types,
+                "key_ingredients": product_a.key_ingredients,
+                "benefits": product_a.benefits,
+                "price": product_a.price
+            }
         
-        product_b_dict = {
-            "name": product_b.name,
-            "concentration": product_b.concentration,
-            "skin_types": product_b.skin_types,
-            "key_ingredients": product_b.key_ingredients,
-            "benefits": product_b.benefits,
-            "price": product_b.price
-        }
+        if isinstance(product_b, dict):
+            product_b_dict = product_b
+        else:
+            product_b_dict = {
+                "name": product_b.name,
+                "concentration": product_b.concentration,
+                "skin_types": product_b.skin_types,
+                "key_ingredients": product_b.key_ingredients,
+                "benefits": product_b.benefits,
+                "price": product_b.price
+            }
         
         return ComparisonPage(
             product_a=product_a_dict,

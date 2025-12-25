@@ -78,6 +78,17 @@ class BaseAgent(ABC):
         if output.errors:
             print(f"  Errors: {output.errors}")
     
+    def log(self, message: str, level: str = "INFO"):
+        """
+        Log a message with agent context.
+        
+        Args:
+            message: Message to log
+            level: Log level (INFO, ERROR, WARNING)
+        """
+        prefix = f"[{self.agent_id}]" if level == "INFO" else f"[{self.agent_id}] {level}:"
+        print(f"{prefix} {message}")
+    
     def __call__(self, input_data: AgentInput) -> AgentOutput:
         """
         Allow agent to be called as a function.

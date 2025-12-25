@@ -1,6 +1,6 @@
-# System Architecture Diagram
+# AI-Powered System Architecture
 
-## Multi-Agent Content Generation System
+## LangChain + Groq LLM Multi-Agent System
 
 ```
 ┌───────────────────────────────────────────────────────────────────────┐
@@ -10,62 +10,79 @@
                               │
                               ▼
 ┌──────────────────────────────────────────────────────────────────────┐
-│                      ORCHESTRATOR AGENT                              │
+│                  LANGCHAIN ORCHESTRATOR                              │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │  ChatGroq LLM Initialization (llama-3.1-8b-instant)           │ │
+│  │  • model: "llama-3.1-8b-instant"                              │ │
+│  │  • temperature: 0.7                                           │ │
+│  │  • groq_api_key: from .env                                    │ │
+│  └────────────────────────────────────────────────────────────────┘ │
 │  ┌────────────────────────────────────────────────────────────────┐ │
 │  │           Workflow State Management                            │ │
 │  │  • product: Product                                            │ │
-│  │  • question_set: QuestionSet                                   │ │
-│  │  • comparison_data: Dict                                       │ │
-│  │  • pages: {faq, product, comparison}                           │ │
+│  │  • question_set: QuestionSet (AI-generated)                    │ │
+│  │  • faq_items: List[Dict] (AI-generated answers)                │ │
+│  │  • comparison_data: Dict (AI-generated competitor)             │ │
+│  │  • pages: [ProductPage, FAQPage, ComparisonPage]               │ │
 │  └────────────────────────────────────────────────────────────────┘ │
-└───┬──────────┬───────────┬───────────┬──────────────────────────────┘
-    │          │           │           │
-    │ Step 1   │ Step 2    │ Step 3    │ Steps 4a-c
-    │          │           │           │
-    ▼          ▼           ▼           ▼
+└───┬──────────┬───────────┬──────────────┬─────────────────────────────┘
+    │          │           │              │
+    │ Step 1   │ Step 2    │ Step 3       │ Steps 4-6
+    │ (Parse)  │(LLM Gen)  │(LLM Batch)   │(LLM + Save)
+    │          │           │              │
+    ▼          ▼           ▼              ▼
 ┌─────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
-│ Data    │ │Question  │ │Comparison│ │Template  │
-│ Parser  │ │Generator │ │  Agent   │ │  Agent   │
-│ Agent   │ │  Agent   │ │          │ │          │
+│ Data    │ │Question  │ │ Answer   │ │Comparison│
+│ Parser  │ │Generator │ │Generator │ │  Agent   │
+│ Agent   │ │ (LLM)    │ │(LLM Batch│ │  (LLM)   │
 └────┬────┘ └─────┬────┘ └─────┬────┘ └─────┬────┘
      │            │            │            │
      │            │            │            │
      ▼            ▼            ▼            ▼
 ┌─────────────────────────────────────────────────┐
+│           LLM PROMPT LAYER (LangChain)          │
+│ ┌─────────────────────────────────────────────┐ │
+│ │ ChatPromptTemplate + JsonOutputParser       │ │
+│ │ • Question prompts (category-aware)         │ │
+│ │ • Answer prompts (batch mode, product ctx)  │ │
+│ │ • Competitor generation prompts             │ │
+│ │ • Comparison analysis prompts               │ │
+│ └─────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────┘
+     │            │            │            │
+     │     API    │     API    │     API    │
+     │     Call   │     Call   │     Call   │
+     ▼            ▼            ▼            ▼
+┌──────────────────────────────────────────────────┐
+│          GROQ API (Llama 3.1 8B Instant)         │
+│  • 30 requests/minute (free tier)                │
+│  • 500k tokens/day                               │
+│  • Fast inference (~1-2s per request)            │
+└──────────────────────────────────────────────────┘
+     │            │            │
+     │   JSON     │   JSON     │   JSON
+     │  Response  │  Response  │  Response
+     ▼            ▼            ▼
+┌─────────────────────────────────────────────────┐
 │            DATA MODELS LAYER                    │
 │ ┌─────────┐ ┌──────────┐ ┌─────────────────┐  │
 │ │ Product │ │Question  │ │ComparisonData   │  │
-│ │  Model  │ │   Set    │ │                 │  │
+│ │  Model  │ │   Set    │ │ (AI-Generated)  │  │
 │ └─────────┘ └──────────┘ └─────────────────┘  │
 └─────────────────────────────────────────────────┘
-     │            │            │
-     │            │            │
-     ▼            ▼            ▼
-┌──────────────────────────────────────────────────┐
-│       CONTENT LOGIC BLOCKS LAYER                 │
-│  ┌──────────────────────────────────────────┐   │
-│  │ • generate_benefits_block                │   │
-│  │ • extract_usage_block                    │   │
-│  │ • compare_ingredients_block              │   │
-│  │ • safety_info_block                      │   │
-│  │ • pricing_info_block                     │   │
-│  │ • product_summary_block                  │   │
-│  │ • answer_generator_block                 │   │
-│  └──────────────────────────────────────────┘   │
-└──────────────────────────────────────────────────┘
                     │
                     ▼
 ┌──────────────────────────────────────────────────┐
-│         TEMPLATE ENGINE LAYER                    │
+│         PYDANTIC VALIDATION LAYER                │
 │  ┌──────────────────────────────────────────┐   │
-│  │  Template Definitions:                   │   │
-│  │  • FAQ Template                          │   │
-│  │  • Product Page Template                 │   │
-│  │  • Comparison Template                   │   │
+│  │  Output Models:                          │   │
+│  │  • FAQPage (with FAQItem list)           │   │
+│  │  • ProductPage (structured details)      │   │
+│  │  • ComparisonPage (2 products + points)  │   │
 │  │                                          │   │
-│  │  Template Application:                   │   │
-│  │  • Field validation                      │   │
-│  │  • Rule enforcement                      │   │
+│  │  Validation:                             │   │
+│  │  • Type checking                         │   │
+│  │  • Required fields                       │   │
 │  │  • Schema compliance                     │   │
 │  └──────────────────────────────────────────┘   │
 └──────────────────────────────────────────────────┘
@@ -74,9 +91,10 @@
 ┌──────────────────────────────────────────────────┐
 │         OUTPUT LAYER (JSON)                      │
 │  ┌──────────────┐ ┌──────────────┐             │
-│  │  faq.json    │ │ product_page │             │
-│  │              │ │   .json      │             │
-│  │ • 5+ Q&As    │ │ • Description│             │
+│  │ faq_page     │ │ product_page │             │
+│  │  .json       │ │   .json      │             │
+│  │              │ │              │             │
+│  │ • 22 AI Q&As │ │ • AI Desc    │             │
 │  │ • Categories │ │ • Features   │             │
 │  └──────────────┘ │ • Usage      │             │
 │                   │ • Safety     │             │
