@@ -70,9 +70,11 @@ def main():
             print(f"\n📄 Pages Created:")
             for page in result.data['pages_generated']:
                 print(f"   - {page}.json")
-            print(f"\n🤖 LLM Framework: {result.data['llm_framework']}")
+            print(f"\n🤖 Orchestration Framework: {result.data['orchestration_framework']}")
             print(f"🧠 Model: {result.data['llm_model']}")
             print(f"⚡ Generation: {result.data['generation_method']}")
+            print(f"🔄 Workflow Pattern: {result.data['workflow_pattern']}")
+            print(f"📊 Total LLM API Calls: {result.data['llm_calls']['total']}")
             print(f"\n📁 Output Directory: {result.data['output_directory']}/")
             print("\n" + "="*60)
         else:
@@ -84,7 +86,7 @@ def main():
         print(f"{str(e)}")
         print("\nPlease ensure:")
         print("1. You have created .env file in the project root")
-        print("2. Added your Gemini API key: GOOGLE_API_KEY=your_key_here")
+        print("2. Added your Groq API key: GROQ_API_KEY=your_key_here")
         print("3. Run: pip install -r requirements.txt")
     except Exception as e:
         print("\n❌ Unexpected Error!")

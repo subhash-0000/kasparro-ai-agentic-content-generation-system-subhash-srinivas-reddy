@@ -149,21 +149,91 @@ Benefits: {benefits}"""),
             self.log(f"✓ Generated competitor: {product_b_raw['name']}")
             self.log(f"✓ Generated {len(response['comparison_points'])} comparison points in 1 API call")
             
+            # Validate LLM output
+            if not self._validate_comparison(result):
+                self.log("Comparison validation failed, using fallback", level="WARNING")
+                return self._fallback_comparison(product_a)
+            
             return AgentOutput(
                 success=True,
                 data=result,
                 metadata={
                     "competitor_name": product_b_raw["name"],
                     "comparison_dimensions": len(response["comparison_points"]),
-                    "generation_method": "LLM (OpenAI via LangChain)",
-                    "api_calls": 1
+                    "generation_method": "LLM (Groq via LangChain)",
+                    "api_calls": 1,
+                    "validation_passed": True
                 }
             )
             
         except Exception as e:
             self.log(f"Error in comparison generation: {str(e)}", level="ERROR")
-            return AgentOutput(
-                success=False,
-                data=None,
-                errors=[f"Comparison generation failed: {str(e)}"]
-            )
+            self.log("Attempting fallback strategy...", level="WARNING")
+            return self._fallback_comparison(product_a)
+    
+    def _validate_comparison(self, result: dict) -> bool:
+        """Validate comparison output for completeness."""
+        required_keys = ["product_a", "product_b", "comparison_points", "summary", "recommendation"]
+        if not all(key in result for key in required_keys):
+            self.log("Validation failed: Missing required keys", level="WARNING")
+            return False
+        
+        if not result["comparison_points"] or len(result["comparison_points"]) < 5:
+            self.log(f"Validation failed: Only {len(result.get('comparison_points', []))} comparison points (minimum 5)", level="WARNING")
+            return False
+        
+        if not result["product_b"].get("name"):
+            self.log("Validation failed: Missing competitor name", level="WARNING")
+            return False
+        
+        self.log("Comparison validation passed", level="DEBUG")
+        return True
+    
+    def _fallback_comparison(self, product_a: Product) -> AgentOutput:
+        """Generate fallback comparison when LLM fails."""
+        self.log("Using fallback comparison generation strategy", level="WARNING")
+        
+        # Generate fictional competitor
+        product_b = {
+            "name": f"Alternative {product_a.name.split()[0]} Serum",
+            "concentration": f"{float(product_a.concentration.split('%')[0]) * 1.2 if '%' in product_a.concentration else '15'}% Active",
+            "skin_types": ["All Skin Types"],
+            "key_ingredients": ["Vitamin E", "Hyaluronic Acid", "Peptides"],
+            "benefits": ["Hydration", "Anti-aging", "Brightening"],
+            "price": "₹999"
+        }
+        
+        result = {
+            "product_a": {
+                "name": product_a.name,
+                "concentration": product_a.concentration,
+                "skin_types": product_a.skin_types,
+                "key_ingredients": product_a.key_ingredients,
+                "benefits": product_a.benefits,
+                "price": product_a.price
+            },
+            "product_b": product_b,
+            "comparison_points": [
+                {"attribute": "Price", "product_a": product_a.price, "product_b": product_b["price"], "winner": product_a.name},
+                {"attribute": "Concentration", "product_a": product_a.concentration, "product_b": product_b["concentration"], "winner": "Comparable"},
+                {"attribute": "Ingredients", "product_a": f"{len(product_a.key_ingredients)} actives", "product_b": f"{len(product_b['key_ingredients'])} actives", "winner": "Comparable"},
+                {"attribute": "Skin Types", "product_a": ", ".join(product_a.skin_types), "product_b": ", ".join(product_b["skin_types"]), "winner": product_b["name"]},
+                {"attribute": "Benefits", "product_a": f"{len(product_a.benefits)} benefits", "product_b": f"{len(product_b['benefits'])} benefits", "winner": "Comparable"},
+            ],
+            "summary": {
+                "winner": product_a.name,
+                "key_differences": f"{product_a.name} offers targeted formulation while {product_b['name']} provides broader compatibility."
+            },
+            "recommendation": f"Choose {product_a.name} for specialized skincare needs, or {product_b['name']} for versatile daily use."
+        }
+        
+        return AgentOutput(
+            success=True,
+            data=result,
+            metadata={
+                "competitor_name": product_b["name"],
+                "comparison_dimensions": len(result["comparison_points"]),
+                "generation_method": "Fallback (Template-based)",
+                "fallback_used": True
+            }
+        )

@@ -109,20 +109,73 @@ IMPORTANT: Return ONLY the JSON array, no additional text."""),
             
             self.log(f"✓ Generated {len(answers)} answers in 1 API call")
             
+            # Validate LLM output
+            if not self._validate_answers(answers, questions):
+                self.log("Answer validation failed, using fallback", level="WARNING")
+                return self._fallback_answers(product, questions)
+            
             return AgentOutput(
                 success=True,
                 data=answers,
                 metadata={
                     "total_questions": len(questions),
                     "api_calls_saved": len(questions) - 1,
-                    "generation_method": "LLM Batch (Groq via LangChain)"
+                    "generation_method": "LLM Batch (Groq via LangChain)",
+                    "validation_passed": True
                 }
             )
             
         except Exception as e:
             self.log(f"Error generating answers: {str(e)}", level="ERROR")
-            return AgentOutput(
-                success=False,
-                data=None,
-                errors=[f"Answer generation failed: {str(e)}"]
-            )
+            self.log("Attempting fallback strategy...", level="WARNING")
+            return self._fallback_answers(product, questions)
+    
+    def _validate_answers(self, answers: list, questions: list) -> bool:
+        """Validate LLM-generated answers for quality."""
+        if not answers or len(answers) != len(questions):
+            self.log(f"Validation failed: Answer count ({len(answers)}) != question count ({len(questions)})", level="WARNING")
+            return False
+        
+        for i, answer in enumerate(answers):
+            if not answer or len(answer.strip()) < 20:
+                self.log(f"Validation failed: Answer {i+1} too short or empty", level="WARNING")
+                return False
+        
+        self.log("Answer validation passed", level="DEBUG")
+        return True
+    
+    def _fallback_answers(self, product: Product, questions: List[CategorizedQuestion]) -> AgentOutput:
+        """Generate fallback answers when LLM fails."""
+        self.log("Using fallback answer generation strategy", level="WARNING")
+        
+        fallback_answers = []
+        for question in questions:
+            # Generate basic answers from product data
+            if "what is" in question.question.lower():
+                answer = f"{product.name} is a {product.concentration} serum formulated for {', '.join(product.skin_types)} skin types."
+            elif "ingredient" in question.question.lower():
+                answer = f"{product.name} contains {', '.join(product.key_ingredients)} as key active ingredients."
+            elif "benefit" in question.question.lower():
+                answer = f"{product.name} provides {', '.join(product.benefits).lower()} benefits."
+            elif "how to use" in question.question.lower() or "how do i use" in question.question.lower():
+                answer = product.usage_instructions
+            elif "side effect" in question.question.lower():
+                answer = product.side_effects if (product.side_effects and len(product.side_effects) > 20) else "No significant side effects have been reported for this product. However, it's always recommended to perform a patch test before first use."
+            elif "price" in question.question.lower():
+                answer = f"{product.name} is priced at {product.price}."
+            elif "skin type" in question.question.lower():
+                answer = f"{product.name} is suitable for {', '.join(product.skin_types)} skin types."
+            else:
+                answer = f"For detailed information about {question.question.lower().replace('?', '')}, please refer to the product documentation or consult with a skincare professional."
+            
+            fallback_answers.append(answer)
+        
+        return AgentOutput(
+            success=True,
+            data=fallback_answers,
+            metadata={
+                "total_questions": len(questions),
+                "generation_method": "Fallback (Template-based)",
+                "fallback_used": True
+            }
+        )

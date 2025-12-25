@@ -4,6 +4,9 @@ Base agent class defining the contract for all agents in the system.
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict
+import logging
+import os
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -38,6 +41,9 @@ class BaseAgent(ABC):
         self.agent_id = agent_id
         self.description = description
         self.execution_count = 0
+        
+        # Setup structured logging
+        self._setup_logging()
     
     @abstractmethod
     def execute(self, input_data: AgentInput) -> AgentOutput:
@@ -51,6 +57,37 @@ class BaseAgent(ABC):
             AgentOutput: Standardized output wrapper
         """
         pass
+    
+    def _setup_logging(self):
+        """Setup structured logging with file and console handlers."""
+        log_dir = "logs"
+        os.makedirs(log_dir, exist_ok=True)
+        
+        # Create logger for this agent
+        self.logger = logging.getLogger(self.agent_id)
+        self.logger.setLevel(logging.DEBUG)
+        
+        # Prevent duplicate handlers
+        if not self.logger.handlers:
+            # File handler with rotation support
+            log_file = os.path.join(log_dir, f"{self.agent_id}.log")
+            file_handler = logging.FileHandler(log_file, encoding='utf-8')
+            file_handler.setLevel(logging.DEBUG)
+            
+            # Console handler
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(logging.INFO)
+            
+            # Structured format with timestamp
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S'
+            )
+            file_handler.setFormatter(formatter)
+            console_handler.setFormatter(formatter)
+            
+            self.logger.addHandler(file_handler)
+            self.logger.addHandler(console_handler)
     
     def validate_input(self, input_data: AgentInput) -> bool:
         """
@@ -73,10 +110,10 @@ class BaseAgent(ABC):
             output: Output that was generated
         """
         self.execution_count += 1
-        print(f"[{self.agent_id}] Execution #{self.execution_count}")
-        print(f"  Success: {output.success}")
+        self.logger.info(f"Execution #{self.execution_count}")
+        self.logger.info(f"  Success: {output.success}")
         if output.errors:
-            print(f"  Errors: {output.errors}")
+            self.logger.error(f"  Errors: {output.errors}")
     
     def log(self, message: str, level: str = "INFO"):
         """
@@ -84,10 +121,10 @@ class BaseAgent(ABC):
         
         Args:
             message: Message to log
-            level: Log level (INFO, ERROR, WARNING)
+            level: Log level (INFO, ERROR, WARNING, DEBUG)
         """
-        prefix = f"[{self.agent_id}]" if level == "INFO" else f"[{self.agent_id}] {level}:"
-        print(f"{prefix} {message}")
+        log_method = getattr(self.logger, level.lower(), self.logger.info)
+        log_method(message)
     
     def __call__(self, input_data: AgentInput) -> AgentOutput:
         """

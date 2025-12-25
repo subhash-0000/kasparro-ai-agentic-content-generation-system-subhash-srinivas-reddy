@@ -1,24 +1,25 @@
 {
   "page_type": "product_page",
   "product_name": "GlowBoost Vitamin C Serum",
-  "tagline": "Brightening power with Vitamin C",
-  "description": "GlowBoost Vitamin C Serum is a 10% Vitamin C serum designed for Oily and Combination skin. Formulated with Vitamin C, Hyaluronic Acid, it delivers brightening and fades dark spots benefits. Apply 2–3 drops in the morning before sunscreen.",
+  "tagline": "Unlock Radiant Complexion with Every Drop",
+  "description": "GlowBoost Vitamin C Serum is a potent, oil-free formula that helps brighten and even out your complexion, while fading dark spots and discoloration. Enriched with 10% Vitamin C and Hyaluronic Acid, this serum is perfect for oily and combination skin types.",
   "key_features": [
-    "10% Vitamin C",
-    "Suitable for Oily & Combination skin",
-    "Contains Vitamin C, Hyaluronic Acid",
-    "2 key benefits"
+    "Brightens and even out skin tone",
+    "Fades dark spots and discoloration",
+    "Oil-free and non-greasy formula",
+    "Enriched with Hyaluronic Acid for hydration"
   ],
   "ingredients": {
-    "Vitamin C": "A powerful antioxidant that brightens skin tone and reduces signs of aging",
-    "Hyaluronic Acid": "A moisture-binding ingredient that hydrates and plumps the skin"
+    "Vitamin C": "A potent antioxidant that neutralizes free radicals, brightening and protecting the skin.",
+    "Hyaluronic Acid": "A natural humectant that retains moisture, leaving skin hydrated and supple."
   },
   "usage_guide": {
-    "timing": "morning",
-    "application_amount": "2-3 drops",
-    "full_instructions": "Apply 2–3 drops in the morning before sunscreen",
-    "application_order": "before sunscreen",
-    "frequency": "daily"
+    "timing": "Morning",
+    "application_amount": "2–3 drops",
+    "full_instructions": "Apply 2–3 drops in the morning before sunscreen.",
+    "application_order": "Before other products",
+    "frequency": "Daily",
+    "tips": "Gently pat the serum into the skin, allowing it to absorb fully before applying sunscreen for optimal results."
   },
   "suitable_for": [
     "Oily",
@@ -31,18 +32,18 @@
   "safety_information": {
     "side_effects": "Mild tingling for sensitive skin",
     "precautions": [
-      "Perform patch test before first use",
-      "Avoid contact with eyes",
-      "Discontinue use if irritation occurs"
+      "May cause mild tingling for sensitive skin",
+      "Discontinue use if irritation persists or worsens",
+      "Avoid applying to broken or sensitive areas"
     ],
-    "suitable_for_sensitive_skin": "caution",
-    "warnings": "May cause mild tingling"
+    "suitable_for_sensitive_skin": "With caution: may cause mild tingling, discontinue use if irritation persists or worsens",
+    "warnings": "Mild tingling for sensitive skin"
   },
   "pricing": {
     "price": "₹699",
     "price_value": "699",
     "currency": "INR",
-    "value_rating": "affordable"
+    "value_rating": "product price"
   },
   "generated_by": "Multi-Agent System"
 }

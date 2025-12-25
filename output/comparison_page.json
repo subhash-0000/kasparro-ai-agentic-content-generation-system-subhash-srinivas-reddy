@@ -18,73 +18,73 @@
     "price": "₹699"
   },
   "product_b": {
-    "name": "Radiance Revive Advanced Vitamin C Serum",
-    "concentration": "15% Tetrahexyldecyl Ascorbate (Stable Vitamin C)",
+    "name": "Radiance Revive Vitamin C Serum",
+    "concentration": "15% Vitamin C, 5% Niacinamide",
     "skin_types": [
       "Dry",
-      "Sensitive",
-      "Normal"
+      "Normal",
+      "Sensitive"
     ],
     "key_ingredients": [
-      "Tetrahexyldecyl Ascorbate",
-      "Squalane",
-      "Glycerin"
+      "Vitamin C",
+      "Niacinamide",
+      "Squalane"
     ],
     "benefits": [
-      "Intense brightening",
-      "Hydrates and plumps the skin",
-      "Reduces fine lines and wrinkles"
+      "Brightening",
+      "Fades dark spots",
+      "Improves skin elasticity"
     ],
     "price": "₹999"
   },
   "comparison_points": [
     {
       "attribute": "Price & Value",
-      "product_a": "GlowBoost Vitamin C Serum",
-      "product_b": "Radiance Revive Advanced Vitamin C Serum",
+      "product_a": "₹699",
+      "product_b": "₹999",
       "winner": "GlowBoost Vitamin C Serum"
     },
     {
       "attribute": "Active Ingredient Concentration",
-      "product_a": "GlowBoost Vitamin C Serum",
-      "product_b": "Radiance Revive Advanced Vitamin C Serum",
-      "winner": "Radiance Revive Advanced Vitamin C Serum"
+      "product_a": "10% Vitamin C",
+      "product_b": "15% Vitamin C",
+      "winner": "Radiance Revive Vitamin C Serum"
     },
     {
       "attribute": "Ingredient Complexity",
-      "product_a": "GlowBoost Vitamin C Serum",
-      "product_b": "Radiance Revive Advanced Vitamin C Serum",
-      "winner": "Radiance Revive Advanced Vitamin C Serum"
+      "product_a": "2",
+      "product_b": "3",
+      "winner": "Radiance Revive Vitamin C Serum"
     },
     {
       "attribute": "Targeted Skin Types",
-      "product_a": "GlowBoost Vitamin C Serum",
-      "product_b": "Radiance Revive Advanced Vitamin C Serum",
-      "winner": "GlowBoost Vitamin C Serum"
+      "product_a": "Oily, Combination",
+      "product_b": "Dry, Normal, Sensitive",
+      "winner": "Radiance Revive Vitamin C Serum"
     },
     {
       "attribute": "Claimed Benefits",
-      "product_a": "GlowBoost Vitamin C Serum",
-      "product_b": "Radiance Revive Advanced Vitamin C Serum",
-      "winner": "Radiance Revive Advanced Vitamin C Serum"
+      "product_a": "Brightening, Fades dark spots",
+      "product_b": "Brightening, Fades dark spots, Improves skin elasticity",
+      "winner": "Radiance Revive Vitamin C Serum"
     },
     {
       "attribute": "Usage Convenience",
-      "product_a": "GlowBoost Vitamin C Serum",
-      "product_b": "Radiance Revive Advanced Vitamin C Serum",
-      "winner": "GlowBoost Vitamin C Serum"
+      "product_a": "Once a day, morning and evening",
+      "product_b": "Once a day, morning and evening",
+      "winner": "Tie"
     },
     {
       "attribute": "Overall Market Positioning",
-      "product_a": "GlowBoost Vitamin C Serum",
-      "product_b": "Radiance Revive Advanced Vitamin C Serum",
-      "winner": "Radiance Revive Advanced Vitamin C Serum"
+      "product_a": "Premium",
+      "product_b": "Premium",
+      "winner": "Tie"
     }
   ],
   "summary": {
-    "winner": "Radiance Revive Advanced Vitamin C Serum",
-    "key_differences": "Radiance Revive Advanced Vitamin C Serum offers a more potent and hydrating formula, while GlowBoost Vitamin C Serum is more budget-friendly and suitable for oily skin types."
+    "winner": "Radiance Revive Vitamin C Serum",
+    "key_differences": "Radiance Revive offers a higher concentration of Vitamin C, additional benefits of improving skin elasticity, and broader skin type compatibility, but at a higher price point."
   },
-  "recommendation": "Choose GlowBoost Vitamin C Serum for budget-conscious consumers looking for an affordable, gentle, and daily-use vitamin C serum, and choose Radiance Revive Advanced Vitamin C Serum for consumers seeking a premium, hydrating, and intense brightening formula.",
+  "recommendation": "Choose GlowBoost Vitamin C Serum for budget-conscious consumers or those with oily, combination skin, while opting for Radiance Revive Vitamin C Serum for those with dry, normal, or sensitive skin seeking advanced benefits.",
   "generated_by": "Multi-Agent System"
 }

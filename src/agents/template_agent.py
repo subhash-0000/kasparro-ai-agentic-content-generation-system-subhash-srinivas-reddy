@@ -1,124 +1,112 @@
 """
-TemplateAgent - Applies templates to generate structured page content.
-Single Responsibility: Template application and page generation.
+TemplateAgent - Structures LLM-generated content into JSON schemas.
+Single Responsibility: Format AI-generated content into Pydantic models.
+NO GENERATION - only formatting pre-generated LLM content.
 """
 
 from typing import Dict, Any
+import re
 from src.agents.base_agent import BaseAgent, AgentInput, AgentOutput
 from src.models.product import Product, QuestionSet
 from src.models.outputs import FAQItem, FAQPage, ProductPage, ComparisonPage, ComparisonItem
-from src.template_engine.engine import TemplateEngine
-from src.logic_blocks.content_blocks import ContentLogicBlocks
 
 
 class TemplateAgent(BaseAgent):
     """
-    Applies templates to generate structured pages using content logic blocks.
+    Structures LLM-generated content into validated JSON schemas.
+    No hardcoded generation - only formatting and validation.
     
-    Input: Dict with page_type, product data, and additional context
+    Input: Dict with page_type, product data, and LLM-generated content
     Output: Structured page (FAQPage, ProductPage, or ComparisonPage)
     """
     
     def __init__(self):
         super().__init__(
             agent_id="template_agent",
-            description="Applies templates and generates structured page content"
+            description="Structures AI-generated content into JSON schemas"
         )
-        self.template_engine = TemplateEngine()
-        self.content_blocks = ContentLogicBlocks()
     
-    def _generate_faq_page(self, product: Product, question_set: QuestionSet) -> FAQPage:
+    def _generate_faq_page(self, faq_items: list, product_name: str) -> FAQPage:
         """
-        Generate FAQ page using FAQ template.
+        Generate FAQ page from pre-generated LLM answers.
         
         Args:
-            product: Product instance
-            question_set: Set of categorized questions
+            faq_items: List of dicts with question, answer, category (LLM-generated)
+            product_name: Product name
             
         Returns:
             FAQPage instance
         """
-        # Select top questions for FAQ (20 questions to strongly exceed minimum requirement)
-        selected_questions = []
-        questions_per_category = {}
-        
-        # Group questions by category
-        for q in question_set.questions:
-            if q.category not in questions_per_category:
-                questions_per_category[q.category] = []
-            questions_per_category[q.category].append(q)
-        
-        # Select questions from each category to reach 20 questions
-        # With 8 categories and 23 total questions, we can take 2-3 per category
-        for category in question_set.categories:
-            if category in questions_per_category:
-                # Take up to 3 questions per category to reach 20
-                questions_to_add = min(3, len(questions_per_category[category]))
-                for i in range(questions_to_add):
-                    if len(selected_questions) < 20:
-                        selected_questions.append(questions_per_category[category][i])
-            if len(selected_questions) >= 20:
-                break
-        
-        # Generate FAQ items with answers
-        faq_items = []
-        for question in selected_questions:
-            answer = self.content_blocks.answer_generator_block(product, question)
-            faq_items.append(FAQItem(
-                question=question.question,
-                answer=answer,
-                category=question.category
-            ))
+        # Convert to FAQItem objects
+        from src.models.outputs import FAQItem
+        faq_objs = [
+            FAQItem(
+                question=item['question'],
+                answer=item['answer'],
+                category=item['category']
+            ) for item in faq_items
+        ]
         
         # Create FAQ page
         return FAQPage(
-            product_name=product.name,
-            total_questions=len(faq_items),
-            categories=[q.category for q in selected_questions],
-            faqs=faq_items
+            product_name=product_name,
+            total_questions=len(faq_objs),
+            categories=list(set([item['category'] for item in faq_items])),
+            faqs=faq_objs
         )
     
-    def _generate_product_page(self, product: Product) -> ProductPage:
+    def _generate_product_page(self, product: Product, product_content: Dict[str, Any]) -> ProductPage:
         """
-        Generate product description page using product template.
+        Format product page from LLM-generated content.
+        Pure formatter - NO generation, only structuring LLM output.
         
         Args:
             product: Product instance
+            product_content: LLM-generated content (ALL fields must be provided)
             
         Returns:
             ProductPage instance
         """
-        # Use content blocks to generate sections
-        summary = self.content_blocks.product_summary_block(product)
-        benefits = self.content_blocks.generate_benefits_block(product)
-        usage = self.content_blocks.extract_usage_block(product)
-        safety = self.content_blocks.safety_info_block(product)
-        pricing = self.content_blocks.pricing_info_block(product)
+        # Extract pricing data (only data extraction, no generation)
+        import re
+        price_match = re.search(r'₹?(\d+)', product.price)
+        price_value = int(price_match.group(1)) if price_match else 0
         
-        # Create ingredient details
-        ingredient_descriptions = {
-            "Vitamin C": "A powerful antioxidant that brightens skin tone and reduces signs of aging",
-            "Hyaluronic Acid": "A moisture-binding ingredient that hydrates and plumps the skin",
-            "Vitamin E": "An antioxidant that protects skin from environmental damage",
-            "Ferulic Acid": "Enhances the stability and effectiveness of other antioxidants"
+        pricing = {
+            "price": product.price,
+            "price_value": str(price_value),
+            "currency": "INR",
+            "value_rating": "product price"
         }
         
-        ingredients_dict = {
-            ingredient: ingredient_descriptions.get(ingredient, "Key active ingredient")
-            for ingredient in product.key_ingredients
-        }
+        # Use LLM-generated content directly - NO fallback generation
+        usage_guide = product_content.get('usage_highlights', {
+            "timing": "as directed",
+            "application_amount": "as directed",
+            "full_instructions": product.usage_instructions,
+            "application_order": "as directed",
+            "frequency": "as directed"
+        })
         
-        # Create product page
+        # Use LLM-generated safety info - NO hardcoded content
+        safety_info = product_content.get('safety_information', {
+            "side_effects": product.side_effects or "None reported",
+            "precautions": product_content.get('precautions', ["Consult product packaging"]),
+            "suitable_for_sensitive_skin": product_content.get('suitable_for_sensitive_skin', "Consult dermatologist"),
+            "warnings": product.side_effects if product.side_effects else "None"
+        })
+        
+        # Create product page using 100% LLM-generated content
         return ProductPage(
             product_name=product.name,
-            tagline=summary["tagline"],
-            description=summary["description"],
-            key_features=summary["key_features"],
-            ingredients=ingredients_dict,
-            usage_guide=usage,
+            tagline=product_content.get('tagline', product.name),
+            description=product_content.get('description', f"{product.name} serum"),
+            key_features=product_content.get('key_features', []),
+            ingredients=product_content.get('ingredient_descriptions', {ing: ing for ing in product.key_ingredients}),
+            usage_guide=usage_guide,
             suitable_for=product.skin_types,
-            benefits=[b["benefit"] for b in benefits["benefits"]],
-            safety_information=safety,
+            benefits=product.benefits,
+            safety_information=safety_info,
             pricing=pricing
         )
     
@@ -182,13 +170,14 @@ class TemplateAgent(BaseAgent):
             page_type = input_data.data.get("page_type")
             
             if page_type == "faq":
-                product = input_data.data.get("product")
-                question_set = input_data.data.get("question_set")
-                page = self._generate_faq_page(product, question_set)
+                faq_items = input_data.data.get("faq_items")
+                product_name = input_data.data.get("product_name")
+                page = self._generate_faq_page(faq_items, product_name)
                 
             elif page_type == "product_page":
                 product = input_data.data.get("product")
-                page = self._generate_product_page(product)
+                product_content = input_data.data.get("product_content")
+                page = self._generate_product_page(product, product_content)
                 
             elif page_type == "comparison":
                 comparison_data = input_data.data.get("comparison_data")
@@ -225,9 +214,9 @@ class TemplateAgent(BaseAgent):
         
         # Check required data for each page type
         if page_type == "faq":
-            return "product" in input_data.data and "question_set" in input_data.data
+            return "faq_items" in input_data.data and "product_name" in input_data.data
         elif page_type == "product_page":
-            return "product" in input_data.data
+            return "product" in input_data.data and "product_content" in input_data.data
         elif page_type == "comparison":
             return "comparison_data" in input_data.data
         
